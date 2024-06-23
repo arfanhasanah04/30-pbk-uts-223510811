@@ -1,223 +1,142 @@
 <template>
-  <div class="container">
-    <header>
-      <nav>
-        <ul>
-          <li>
-            <button @click="selectedMenu = 'Post'" :class="{ active: selectedMenu === 'Post' }">Post</button>
-          </li>
-          <li>
-            <button @click="selectedMenu = 'Todos'" :class="{ active: selectedMenu === 'Todos' }">Todos</button>
-          </li>
-        </ul>
-      </nav>
-    </header>
-    <div class="content">
-      <div v-if="selectedMenu === 'Post'" class="post-section">
-        <div class="select-user">
-          <label for="user-select">Pilih Pengguna:</label>
-          <select id="user-select" v-model="selectedUser" @change="fetchPosts">
-            <option value="" disabled>Pilih pengguna</option>
-            <option v-for="user in users" :key="user.id" :value="user.id">{{ user.name }}</option>
-          </select>
-        </div>
-        <div v-if="posts.length > 0" class="post-list">
-          <h2>Postingan User: {{ selectedUserName }}</h2>
-          <table class="post-table">
-            <thead>
-              <tr>
-                <th>Title</th>
-                <th>Body</th>
-              </tr>
-            </thead>
-            <tbody>
-              <tr v-for="post in posts" :key="post.id">
-                <td>{{ post.title }}</td>
-                <td>{{ post.body }}</td>
-              </tr>
-            </tbody>
-          </table>
-        </div>
-        <div v-else class="loading">
-          <p>Loading...</p>
-        </div>
-      </div>
-      <div v-else-if="selectedMenu === 'Todos'" class="todos-section">
-        <Todos :todos="todos" />
-      </div>
-    </div>
-  </div>
+  <q-layout view="hHh lpR fFf">
+    <q-header elevated>
+      <q-toolbar>
+        <q-toolbar-title>
+          Arfan Hasanah
+        </q-toolbar-title>
+        <q-btn flat label="Posts" @click="$router.push('/posts')" />
+        <q-btn flat label="Todos" @click="$router.push('/todos')" />
+        <q-btn flat label="Albums" @click="$router.push('/albums')" />
+      </q-toolbar>
+    </q-header>
+    
+    <q-page-container>
+      <router-view />
+    </q-page-container>
+  </q-layout>
 </template>
 
 <script>
-import Todos from './Todos.vue';
-
 export default {
-  components: {
-    Todos
-  },
-  data() {
-    return {
-      selectedMenu: 'Post',
-      users: [],
-      selectedUser: null,
-      selectedUserName: '',
-      posts: [],
-      todos: []
-    };
-  },
-  methods: {
-    fetchUsers() {
-      fetch('https://jsonplaceholder.typicode.com/users')
-        .then(response => response.json())
-        .then(data => {
-          this.users = data;
-        })
-        .catch(error => {
-          console.error('Error fetching users:', error);
-        });
-    },
-    fetchPosts() {
-      if (this.selectedUser) {
-        fetch(`https://jsonplaceholder.typicode.com/posts?userId=${this.selectedUser}`)
-          .then(response => response.json())
-          .then(data => {
-            this.posts = data;
-          })
-          .catch(error => {
-            console.error('Error fetching posts:', error);
-          });
-        
-        const selectedUser = this.users.find(user => user.id === parseInt(this.selectedUser));
-        if (selectedUser) {
-          this.selectedUserName = selectedUser.name;
-        }
-      }
-    }
-  },
-  watch: {
-    selectedUser() {
-      this.fetchPosts();
-    }
-  },
-  created() {
-    this.fetchUsers();
-  }
+  name: 'App',
 };
 </script>
 
 <style>
+body {
+  background-color: #f5f5f5;
+  font-family: 'Roboto', sans-serif;
+}
+
+.q-toolbar {
+  background-color: rgb(10, 66, 179);
+  color: #fff;
+}
+
+.q-page-container {
+  padding: 20px;
+}
+
 .container {
   display: flex;
   flex-direction: column;
   justify-content: center;
   align-items: center;
-  height: 100vh;
+  min-height: 100vh;
+  padding: 20px;
+  background-color: #f0f0f0;
 }
 
-header {
-  background-color: #3A82EE;
-  padding: 15px 0;
-  border-radius: 0.5rem;
-}
-
-nav ul {
-  list-style: none;
-  padding: 0;
-  margin: 0;
-}
-
-nav ul li {
-  display: inline-block;
-  margin-right: 20px;
-  color: #fff;
-  cursor: pointer;
-}
-
-nav ul li.active {
-  font-weight: bold;
-}
-
-button {
-  background-color: #ff00ff;
-  color: #fff;
-  padding: 8px 16px;
-  border: none;
-  border-radius: 5px;
-  cursor: pointer;
-  transition: background-color 0.3s;
-}
-
-button:hover {
-  background-color: #cc00cc;
-}
-
-.content {
-  max-width: 800px;
-}
-
-.post-section,
-.todos-section {
-  margin-top: 20px;
-}
-
-.select-user {
+.greeting {
   margin-bottom: 20px;
-}
-
-.select-user label {
-  margin-right: 10px;
-}
-
-.select-user select {
-  padding: 8px 12px;
-  border-radius: 5px;
-  border: 1px solid #ccc;
-}
-
-.post-list {
-  margin-top: 20px;
-}
-
-.loading {
-  margin-top: 20px;
   text-align: center;
 }
 
-/* Styling for post table */
-.post-table {
+.title {
+  font-size: 24px;
+  margin-bottom: 10px;
+}
+
+.create-todo,
+.todo-list {
   width: 100%;
-  border-collapse: collapse;
-  background-color: #ffffff;
-  border-radius: 5px;
-  overflow: hidden;
+  max-width: 500px;
+  padding: 20px;
+  border: 1px solid #ddd;
+  border-radius: 8px;
+  background-color: #fff;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  margin-bottom: 20px;
 }
 
-/* Styling for table header */
-.post-table th {
-  background-color: #3A82EE;
-  color: #fff;
-  font-weight: bold;
+.form-content {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.options {
+  display: flex;
+  justify-content: center;
+  margin: 10px 0;
+}
+
+.options .q-radio.movie-radio {
+  background-color: #fff3cd; /* Yellow background for movies */
+  border-radius: 4px;
+  padding: 5px;
+}
+
+.options .q-radio.series-radio {
+  background-color: #c3e6cb; /* Light green background for series */
+  border-radius: 4px;
+  padding: 5px;
+}
+
+.todo-item {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 10px;
   padding: 10px;
+  border: 1px solid #ddd;
+  border-radius: 4px;
 }
 
-/* Styling for table body */
-.post-table td {
-  padding: 10px;
-  border-bottom: 1px solid #ccc;
+.todo-item.done {
+  background-color: #d4edda;
 }
 
-/* Styling for table rows */
-.post-table tbody tr:nth-child(even) {
-  background-color: #f9f9f9;
+.todo-item.movie {
+  background-color: #fff3cd; /* Yellow background for movies */
+  border: 2px solid #ffc107; /* Yellow border for movies */
 }
 
-.post-table tbody tr:nth-child(odd) {
-  background-color: #ffffff;
+.todo-item.series {
+  background-color: #c3e6cb; /* Light green background for series */
+  border: 2px solid #28a745; /* Green border for series */
 }
 
-/* Hover effect on table rows */
-.post-table tbody tr:hover {
-  background-color: #cceeff;
+.add-btn,
+.delete-btn {
+  font-size: 12px;
+  min-width: unset;
+  margin-left: 10px;
+}
+
+.delete-btn .q-icon {
+  font-size: 12px;
+}
+
+/* Added styles for buttons */
+.q-btn.movie-btn {
+  background-color: #ffc107; /* Yellow background for movie button */
+  color: #000; /* Dark text color for contrast */
+}
+
+.q-btn.series-btn {
+  background-color: #28a745; /* Green background for series button */
+  color: #000; /* Dark text color for contrast */
 }
 </style>

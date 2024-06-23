@@ -29,7 +29,7 @@ input:not([type="radio"]):not([type="checkbox"]), button {
 }
 
 body {
-    background: rgb(103, 219, 196); /* Change to the desired shade of blue */
+    background: rgb(219, 234, 231); /* Change to the desired shade of blue */
     color: var(--dark);
 }
 
